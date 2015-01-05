@@ -10,10 +10,25 @@ import android.os.Parcelable;
  */
 public class Version implements Parcelable {
 
-    final String name;
-    final String note;
-    final String URL;
-    final int code;
+    /**
+     * 版本名称
+     */
+    public final String name;
+
+    /**
+     * 版本更新说明
+     */
+    public final String note;
+
+    /**
+     * 版本 APK 的下载地址
+     */
+    public final String URL;
+
+    /**
+     * 版本代码
+     */
+    public final int code;
 
     public Version(String name, String note, String url, int code) {
         this.name = name;
