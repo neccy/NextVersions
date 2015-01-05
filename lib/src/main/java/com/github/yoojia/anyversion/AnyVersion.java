@@ -27,18 +27,21 @@ public class AnyVersion {
         return ANY_VERSION;
     }
 
+    Application context;
+    Parser parser;
+
     private Future<?> workingTask;
     private Version currentVersion;
-    private Application context;
-    private String URL;
     private Callback callback;
-    private Parser parser;
+    private String url;
     private ExecutorService threads = Executors.newSingleThreadExecutor();
     private Handler mainHandler;
+    private RemoteRequest remoteRequest;
 
-    public static void init(final Application context, String url, Parser parser){
+    public static void init(final Application context, Parser parser){
+        Enforce.mainUIThread();
         if (ANY_VERSION.context != null){
-            throw new IllegalStateException("Duplicate init !");
+            throw new IllegalStateException("Duplicate call init !");
         }
         if (context == null) {
             throw new NullPointerException("Application Context CANNOT be null !");
@@ -46,15 +49,10 @@ public class AnyVersion {
         if (parser == null) {
             throw new NullPointerException("Parser CANNOT be null !");
         }
-        if (TextUtils.isEmpty(url)){
-            throw new NullPointerException("URL CANNOT be null or empty !");
-        }
         ANY_VERSION.context = context;
-        ANY_VERSION.URL = url;
         ANY_VERSION.parser = parser;
         ANY_VERSION.mainHandler = new Handler(Looper.getMainLooper()){
-            @Override
-            public void handleMessage(Message msg) {
+            @Override public void handleMessage(Message msg) {
                 Version version = (Version) msg.obj;
                 new VersionDialog(context, version).show();
             }
@@ -68,18 +66,36 @@ public class AnyVersion {
     }
 
     public void setCallback(Callback callback){
+        Enforce.init();
         if (callback == null){
             throw new NullPointerException("Callback CANNOT be null !");
         }
         this.callback = callback;
     }
 
-    public void startCheck(final NotifyStyle style){
+    public void setURL(String url){
+        Enforce.init();
+        if (TextUtils.isEmpty(url)){
+            throw new NullPointerException("URL CANNOT be null or empty !");
+        }
+        this.url = url;
+    }
+
+    public void setRemoteRequest(RemoteRequest remoteRequest){
+        Enforce.init();
+        if (remoteRequest == null){
+            throw new NullPointerException("remoteRequest CANNOT be null !");
+        }
+        this.remoteRequest = remoteRequest;
+    }
+
+    public void check(final String url, final RemoteRequest remote, final NotifyStyle style){
+        Enforce.init();
         if (NotifyStyle.Callback.equals(style) && callback == null){
             throw new NullPointerException("If reply by callback, callback CANNOT be null ! " +
                     "Call 'setCallback(...) to setup !'");
         }
-        workingTask = threads.submit(new Remote(URL, parser, new Callback() {
+        final Callback core = new Callback() {
             @Override public void onVersion(Version remoteVersion) {
                 // 检查是否为新版本
                 if (remoteVersion == null) return;
@@ -97,18 +113,33 @@ public class AnyVersion {
                         break;
                 }
             }
-        }));
+        };
+        remote.setOptions(url, parser, core);
+        workingTask = threads.submit(remote);
+    }
+
+    public void check(NotifyStyle style){
+        createRemoteRequestIfNeed();
+        check(this.url, this.remoteRequest, style);
     }
 
     public void cancelCheck(){
+        Enforce.init();
         if (workingTask != null && !workingTask.isDone()){
             workingTask.cancel(true);
         }
     }
 
     public void destroy(){
+        Enforce.init();
         cancelCheck();
         threads.shutdown();
+    }
+
+    private void createRemoteRequestIfNeed(){
+        if (this.remoteRequest == null){
+            this.remoteRequest = new SimpleRemoteRequest();
+        }
     }
 
 }

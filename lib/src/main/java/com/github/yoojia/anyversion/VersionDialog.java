@@ -10,7 +10,7 @@ import android.view.WindowManager;
  * yoojia.chen@gmail.com
  * 2015-01-04
  */
-public class VersionDialog {
+class VersionDialog {
 
     private final AlertDialog dialog;
 

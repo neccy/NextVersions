@@ -15,11 +15,15 @@ import com.github.yoojia.anyversion.Callback;
 import com.github.yoojia.anyversion.Downloads;
 import com.github.yoojia.anyversion.NotifyStyle;
 import com.github.yoojia.anyversion.Parser;
+import com.github.yoojia.anyversion.RemoteRequest;
 import com.github.yoojia.anyversion.Version;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
+
+import java.util.concurrent.Callable;
+import java.util.concurrent.Future;
 
 /**
  * Created by Yoojia.Chen
@@ -44,7 +48,7 @@ public class MainActivity extends Activity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
 
-        AnyVersion.init(getApplication(), "http://127.0.0.1:8080/release.json", new Parser() {
+        AnyVersion.init(getApplication(), new Parser() {
             @Override
             public Version onParse(String response) {
                 final JSONTokener tokener = new JSONTokener(response);
@@ -64,6 +68,14 @@ public class MainActivity extends Activity{
         });
 
         AnyVersion version = AnyVersion.getInstance();
+//        version.setRemoteRequest(new RemoteRequest() {
+//            @Override
+//            public String request(String url) {
+//                return null;
+//            }
+//        });
+
+
         version.setCallback(new Callback() {
             @Override
             public void onVersion(Version version) {
@@ -76,7 +88,7 @@ public class MainActivity extends Activity{
             @Override
             public void onClick(View v) {
                 AnyVersion version = AnyVersion.getInstance();
-                version.startCheck(NotifyStyle.Broadcast);
+                version.check(NotifyStyle.Broadcast);
             }
         });
 
@@ -85,7 +97,7 @@ public class MainActivity extends Activity{
             @Override
             public void onClick(View v) {
                 AnyVersion version = AnyVersion.getInstance();
-                version.startCheck(NotifyStyle.Callback);
+                version.check(NotifyStyle.Callback);
             }
         });
 
@@ -94,11 +106,11 @@ public class MainActivity extends Activity{
             @Override
             public void onClick(View v) {
                 AnyVersion version = AnyVersion.getInstance();
-                version.startCheck(NotifyStyle.Dialog);
+                version.check(NotifyStyle.Dialog);
             }
         });
 
-        AutoInstall.register(getApplication());
+        AutoInstall.register(this);
     }
 
     @Override
@@ -118,7 +130,7 @@ public class MainActivity extends Activity{
         super.onDestroy();
         AnyVersion version = AnyVersion.getInstance();
         version.destroy();
-        Downloads.destroy(getApplication());
-        AutoInstall.destroy(getApplication());
+        Downloads.destroy(this);
+        AutoInstall.destroy(this);
     }
 }

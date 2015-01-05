@@ -1,6 +1,5 @@
 package com.github.yoojia.anyversion;
 
-import android.app.Application;
 import android.app.DownloadManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -41,11 +40,13 @@ public class AutoInstall {
         }
     };
 
-    public static void register(Application context){
-        context.registerReceiver(downloadReceiver, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
+    public static void register(Context context){
+        Enforce.mainUIThread();
+        context.getApplicationContext().registerReceiver(downloadReceiver, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
     }
 
-    public static void destroy(Application context){
-        context.unregisterReceiver(downloadReceiver);
+    public static void destroy(Context context){
+        Enforce.mainUIThread();
+        context.getApplicationContext().unregisterReceiver(downloadReceiver);
     }
 }
