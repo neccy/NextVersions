@@ -14,7 +14,7 @@ import java.util.Set;
  */
 class Downloads {
 
-    final Set<Long> KEEPS = new HashSet<>();
+    static final Set<Long> KEEPS = new HashSet<>();
 
     public void destroy(Context context){
         DownloadManager download = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);

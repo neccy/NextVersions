@@ -62,13 +62,7 @@ public class MainActivity extends Activity{
         });
 
         AnyVersion version = AnyVersion.getInstance();
-//        version.setRemoteRequest(new RemoteRequest() {
-//            @Override
-//            public String request(String url) {
-//                return null;
-//            }
-//        });
-
+        version.setURL("http://192.168.1.2:8082/nexus/release.json");
 
         version.setCallback(new Callback() {
             @Override
