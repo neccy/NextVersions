@@ -9,21 +9,15 @@ import android.view.View;
 import android.widget.Button;
 
 import com.github.yoojia.anyversion.AnyVersion;
-import com.github.yoojia.anyversion.AutoInstall;
 import com.github.yoojia.anyversion.Broadcasts;
 import com.github.yoojia.anyversion.Callback;
-import com.github.yoojia.anyversion.Downloads;
 import com.github.yoojia.anyversion.NotifyStyle;
 import com.github.yoojia.anyversion.Parser;
-import com.github.yoojia.anyversion.RemoteRequest;
 import com.github.yoojia.anyversion.Version;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
-
-import java.util.concurrent.Callable;
-import java.util.concurrent.Future;
 
 /**
  * Created by Yoojia.Chen
@@ -110,7 +104,6 @@ public class MainActivity extends Activity{
             }
         });
 
-        AutoInstall.register(this);
     }
 
     @Override
@@ -129,8 +122,6 @@ public class MainActivity extends Activity{
     protected void onDestroy() {
         super.onDestroy();
         AnyVersion version = AnyVersion.getInstance();
-        version.destroy();
-        Downloads.destroy(this);
-        AutoInstall.destroy(this);
+        version.destroy(this);
     }
 }

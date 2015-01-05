@@ -14,7 +14,7 @@ class VersionDialog {
 
     private final AlertDialog dialog;
 
-    public VersionDialog(final Application context, final Version version) {
+    public VersionDialog(final Application context, final Version version, final Downloads downloads) {
         AlertDialog.Builder builder = new AlertDialog.Builder(context, R.style.Theme_System_Alert)
                 .setTitle(version.name)
                 .setMessage(version.note)
@@ -28,7 +28,7 @@ class VersionDialog {
                 .setPositiveButton(R.string.update_now, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        Downloads.submit(context, version);
+                        downloads.submit(context, version);
                         dialog.cancel();
                     }
                 })

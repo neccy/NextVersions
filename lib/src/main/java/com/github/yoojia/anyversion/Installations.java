@@ -15,9 +15,9 @@ import java.io.File;
  * yoojia.chen@gmail.com
  * 2015-01-04
  */
-public class AutoInstall {
+class Installations {
 
-    private static final BroadcastReceiver downloadReceiver = new BroadcastReceiver() {
+    private final BroadcastReceiver downloadReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             long reference = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1);
@@ -40,12 +40,12 @@ public class AutoInstall {
         }
     };
 
-    public static void register(Context context){
+    public void register(Context context){
         Enforce.mainUIThread();
         context.getApplicationContext().registerReceiver(downloadReceiver, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
     }
 
-    public static void destroy(Context context){
+    public void unregister(Context context){
         Enforce.mainUIThread();
         context.getApplicationContext().unregisterReceiver(downloadReceiver);
     }

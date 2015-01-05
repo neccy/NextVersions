@@ -9,6 +9,8 @@ import android.os.Looper;
  */
 class Enforce {
 
+    private Enforce(){}
+
     public static void mainUIThread(){
         if (Looper.getMainLooper() != Looper.myLooper()){
             throw new IllegalStateException("Should run on main UI thread !");

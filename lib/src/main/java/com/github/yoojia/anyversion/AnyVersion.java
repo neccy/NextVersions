@@ -1,6 +1,7 @@
 package com.github.yoojia.anyversion;
 
 import android.app.Application;
+import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Handler;
@@ -34,9 +35,11 @@ public class AnyVersion {
     private Version currentVersion;
     private Callback callback;
     private String url;
-    private ExecutorService threads = Executors.newSingleThreadExecutor();
     private Handler mainHandler;
     private RemoteRequest remoteRequest;
+    private final ExecutorService threads = Executors.newSingleThreadExecutor();
+    private final Installations installations = new Installations();
+    private final Downloads downloads = new Downloads();
 
     public static void init(final Application context, Parser parser){
         Enforce.mainUIThread();
@@ -54,7 +57,7 @@ public class AnyVersion {
         ANY_VERSION.mainHandler = new Handler(Looper.getMainLooper()){
             @Override public void handleMessage(Message msg) {
                 Version version = (Version) msg.obj;
-                new VersionDialog(context, version).show();
+                new VersionDialog(context, version, ANY_VERSION.downloads).show();
             }
         };
         try {
@@ -63,6 +66,7 @@ public class AnyVersion {
         } catch (PackageManager.NameNotFoundException e) {
             ANY_VERSION.currentVersion = new Version(null, null, null, 0);
         }
+        ANY_VERSION.installations.register(context);
     }
 
     public void setCallback(Callback callback){
@@ -130,10 +134,12 @@ public class AnyVersion {
         }
     }
 
-    public void destroy(){
+    public void destroy(Context context){
         Enforce.init();
         cancelCheck();
         threads.shutdown();
+        downloads.destroy(context);
+        installations.unregister(context);
     }
 
     private void createRemoteRequestIfNeed(){

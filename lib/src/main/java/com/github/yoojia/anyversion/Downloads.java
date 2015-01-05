@@ -12,16 +12,19 @@ import java.util.Set;
  * yoojia.chen@gmail.com
  * 2015-01-04
  */
-public class Downloads {
+class Downloads {
 
-    static final Set<Long> KEEPS = new HashSet<>();
+    final Set<Long> KEEPS = new HashSet<>();
 
-    public static void destroy(Context context){
-        DownloadManager download = (DownloadManager)context.getSystemService(Context.DOWNLOAD_SERVICE);
-        for (long id : KEEPS) download.remove(id);
+    public void destroy(Context context){
+        DownloadManager download = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
+        for (long id : KEEPS){
+            download.remove(id);
+            KEEPS.remove(id);
+        }
     }
 
-    public static long submit(Context context, Version version){
+    public long submit(Context context, Version version){
         DownloadManager download = (DownloadManager)context.getSystemService(Context.DOWNLOAD_SERVICE);
         Uri uri = Uri.parse(version.URL);
         DownloadManager.Request request = new DownloadManager.Request(uri);
