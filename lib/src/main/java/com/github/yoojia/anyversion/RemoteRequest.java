@@ -1,5 +1,7 @@
 package com.github.yoojia.anyversion;
 
+import java.io.IOException;
+
 /**
  * Created by Yoojia.Chen
  * yoojia.chen@gmail.com
@@ -20,10 +22,9 @@ public abstract class RemoteRequest implements Runnable {
 
     @Override
     final public void run() {
-        String response = request(this.url);
         Version version = null;
         try{
-            version = parser.onParse(response);
+            version = parser.onParse(request(this.url));
         }catch (Exception ex){ /* Nothing */ }
         callback.onVersion(version);
     }
@@ -33,6 +34,6 @@ public abstract class RemoteRequest implements Runnable {
      * @param url 服务器地址
      * @return 服务器返回的内容
      */
-    public abstract String request(String url);
+    public abstract String request(String url) throws IOException;
 
 }
