@@ -165,14 +165,14 @@ public class AnyVersion {
 
     /**
      * 销毁 AnyVersion 服务
-     * @param context Android 上下文对象
      */
-    public void destroy(Context context){
+    public void destroy(){
         Enforce.init();
         cancelCheck();
-        threads.shutdown();
+        threads.shutdownNow();
         downloads.destroy(context);
         installations.unregister(context);
+        context = null; // !!! required
     }
 
     private void createRemoteRequestIfNeed(){
