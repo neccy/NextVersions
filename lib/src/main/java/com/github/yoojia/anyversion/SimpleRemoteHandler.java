@@ -17,7 +17,7 @@ import java.net.URL;
  * yoojia.chen@gmail.com
  * 2015-01-05
  */
-class SimpleRemoteRequest extends RemoteRequest {
+class SimpleRemoteHandler extends RemoteHandler {
 
     static final int DEFAULT_HTTP_CONNECT_TIMEOUT = 5 * 1000;
     static final int DEFAULT_HTTP_READ_TIMEOUT = 10 * 1000;

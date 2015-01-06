@@ -41,12 +41,12 @@ class Installations {
     };
 
     public void register(Context context){
-        Enforce.mainUIThread();
+        Preconditions.requiredMainUIThread();
         context.getApplicationContext().registerReceiver(downloadReceiver, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
     }
 
     public void unregister(Context context){
-        Enforce.mainUIThread();
+        Preconditions.requiredMainUIThread();
         context.getApplicationContext().unregisterReceiver(downloadReceiver);
     }
 }

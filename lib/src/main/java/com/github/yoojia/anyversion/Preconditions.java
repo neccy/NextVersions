@@ -7,17 +7,17 @@ import android.os.Looper;
  * yoojia.chen@gmail.com
  * 2015-01-05
  */
-class Enforce {
+class Preconditions {
 
-    private Enforce(){}
+    private Preconditions(){}
 
-    public static void mainUIThread(){
+    public static void requiredMainUIThread(){
         if (Looper.getMainLooper() != Looper.myLooper()){
             throw new IllegalStateException("Should run on main UI thread !");
         }
     }
 
-    public static void init(){
+    public static void requireInited(){
         if (AnyVersion.getInstance().context == null){
             throw new IllegalStateException("AnyVersion instance NOT init !");
         }

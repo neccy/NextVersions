@@ -8,7 +8,7 @@ import java.io.IOException;
  * 2015-01-05
  * 远程请求处理接口
  */
-public abstract class RemoteRequest implements Runnable {
+public abstract class RemoteHandler implements Runnable {
 
     private String url;
     private Parser parser;
