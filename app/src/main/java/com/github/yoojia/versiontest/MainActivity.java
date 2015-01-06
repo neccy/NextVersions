@@ -42,24 +42,11 @@ public class MainActivity extends Activity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
 
-        AnyVersion.init(getApplication(), new Parser() {
-            @Override
-            public Version onParse(String response) {
-                final JSONTokener tokener = new JSONTokener(response);
-                try {
-                    JSONObject json = (JSONObject) tokener.nextValue();
-                    return new Version(
-                            json.getString("name"),
-                            json.getString("note"),
-                            json.getString("url"),
-                            json.getInt("code")
-                    );
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                return null;
-            }
-        });
+        init();
+
+    }
+
+    private void init(){
 
         AnyVersion version = AnyVersion.getInstance();
         version.setURL("http://192.168.1.2:8082/nexus/release.json");
@@ -97,7 +84,6 @@ public class MainActivity extends Activity{
                 version.check(NotifyStyle.Dialog);
             }
         });
-
     }
 
     @Override
@@ -115,6 +101,6 @@ public class MainActivity extends Activity{
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        AnyVersion.getInstance().destroy();
+//        AnyVersion.getInstance().destroy();
     }
 }
