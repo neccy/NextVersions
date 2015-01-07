@@ -1,22 +1,27 @@
 # AnyVersion - 源码解析
 
-## 1. 如何自动更新
+Android 自动更新新版本的其中套路是：
+
+1. 获取服务器的应用版本；
+2. 对比当前应用的版本，判断是否为新版本；
+3. 下载新版本；
+4. 安装新版本；
+
+## 1. 如何更新
 
 每个 Android App 都有两个特殊的属性：
 
-* `versionName` 版本名称，是个字符串。指版本的具体名称，如 “v0.0.1”等。
-* `versionCode` 版本码，是个整数。Android OS 依赖这个参数来判定版本的新旧，`新版本.versionCode > 旧版本.versionCode`。
+* `versionName` 版本名称，字符串。指应用版本的具体名称，如 `v0.0.1` 等。
+* `versionCode` 版本码，整数。Android 系统依赖此参数来判定版本的新旧，`新版本.versionCode` > `旧版本.versionCode`。
 
-根据 versionCode ，我们可以从远程服务器中获取最新版本的 APK 的 versionCode，比较两者的大小关系即。如果远程服务器为新版本，则根据新版本 APK 的 URL 将它下载，并调用系统的 APK 安装服务。然后完成应用的新版本自动更新。
-
-为此，我们需要一个 App 版本对象，它将 App 的 versionName，versionCode, 新版本 APK 下载 URL，以及此版本的更新说明等数据封装在一起。
+用一个 App 版本对象，将 App 的 versionName，versionCode, 新版本 APK 下载 URL，以及此版本的更新说明等数据封装在一起。
 
     public class Version implements Parcelable {
 
-        final String name;
-        final String note;
-        final String URL;
-        final int code;
+        public final String name;
+        public final String note;
+        public final String URL;
+        public final int code;
 
         public Version(String name, String note, String url, int code) {
             this.name = name;
@@ -30,23 +35,27 @@
     ... parcelable code ...
 
 
-## 2. AnyVersion 接口
+## 2. 如何设计
 
-脱离了 Low-Level 的程序员都喜欢讲究“通用性”，而有的例如 Spring 之类，通用得过分，九曲十八弯不见干实事的代码。All right，我们将自动更新库做得较为通用，不追求高配置、高定制。当然，这里只是吐槽。
+AnyVersion 在设计接口时，秉承一个原则：默认优于配置。
 
-### 响应数据解析
+### - 数据解析接口
 
-每个 Web Service 有各自数据格式规范。但是不管数据格式怎么样，我们只需要它能解析成 `Version` 对像即可，管它是 XML、JSON 还是 TXT呢。创建一个解析接口，让库使用者来按需解析。
+每个 Web Service 有各自数据格式规范。但是无论远程服务器返回的数据格式是 JSON ，是 XML ，还是 HTML，这此 AnyVersion 都交由开发者自行定夺。`VersionParser` 就是完成此任务的接口。它提供远程服务器返回的数据，要求开发者将数据解析，并返回一个 Version 对象。 
 
-    public interface Parser {
+    public interface VersionParser {
         /**
          * 将服务端返回的版本数据解析为版本对象
          * @param response 服务端返回的数据
          */
         Version onParse(String response);
     }
+    
+### - 网络访问接口
 
-### 展现方式
+默认地，AnyVersion 提供了一个简单的 HTTP 网络访问实现类。开发者只需要设置访问 URL，即可获取远程数据。
+
+### - 提供新版本展现方式
 
 在 App 用户在使用过程中，我们如何提示用户此 App 需要更新呢？
 
@@ -67,13 +76,11 @@
 
 用意非常清晰。当远程服务器上的 App 是新版本时，Broadcast 为通过 Android 的广播机制来处理如何处理这个新版本的 Version；Dialog，则直接弹出一个对话框，让用户选择是否更新；Callback，则是将新版本 Version 传递给一个回调接口，让 App 开发者自行处理新版本事宜；Notification，则是推送到通知栏。
 
-### 3. AnyVersion 接口
+## 3. AnyVersion 接口实现
 
-有以上两个前置设计，就可以开始设计 AnyVersion 自动更新库的接口。
+AnyVersion 在实现上，严格遵循“Fast-Fail（快速崩溃）”原则，一旦认为在接口及参数的使用和逻辑不合法，立即崩溃，而输出非模棱两可的提示信息。
 
-设计第三方库时，遵循“Fast-Fail（快速崩溃）”原则，即一旦库使用者调用API 时，参数不合法，立即让应用崩溃，以让使用者快速知道问题在哪里。
-
-#### 初始化
+#### - 初始化
 
 在应用启动时，将 AnyVersion 初始化；在需要检测应用新版本时，调用一些检测接口，即可实现检测。
 
@@ -157,11 +164,11 @@ Android OS 的资源都跟 Context 有关，AnyVersion 很多操作也非常依�
 	    threads.shutdown();
 	}
 
-## 4. 下载
+## 4. 如何下载
 
 Android OS 已经内置下载管理器，使用它我们可以非常方便的完成 Apk 文件的下载功能。
 
-## 5. 安装
+## 5. 如何安装
 
 前面这么多，都是为了这一步。
 
