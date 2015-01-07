@@ -22,7 +22,7 @@ AnyVersion 最新版本已推送到 Maven Central 和 JCenter 两个服务中。
 
 	dependencies {
 		... others ...
-	    compile 'com.github.yoojia:anyversion:1.0.4-alpha@aar'
+	    compile 'com.github.yoojia:anyversion:1.0@aar'
 	}
 
 ### Step 2 - Android 权限
