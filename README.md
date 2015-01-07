@@ -2,7 +2,7 @@
 
 Android App 版本更新提示库 - An Android APP new version update library.
 
-* [AnyVersion 项目源码分析](ANALYSE.md)
+* [AnyVersion 源码分析](ANALYSE.md)
 * [AnyVersion 高级使用教程](USAGE.md)
 
 ## 1. 基本使用教程
