@@ -1,23 +1,15 @@
 package com.github.yoojia.versiontest;
 
 import android.app.Activity;
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
 import com.github.yoojia.anyversion.AnyVersion;
-import com.github.yoojia.anyversion.Broadcasts;
 import com.github.yoojia.anyversion.Callback;
 import com.github.yoojia.anyversion.NotifyStyle;
-import com.github.yoojia.anyversion.Parser;
 import com.github.yoojia.anyversion.Version;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.json.JSONTokener;
+import com.github.yoojia.anyversion.VersionReceiver;
 
 /**
  * Created by Yoojia.Chen
@@ -26,24 +18,21 @@ import org.json.JSONTokener;
  */
 public class MainActivity extends Activity{
 
-    class TestReceiver extends BroadcastReceiver{
+    static class NewVersionReceiver extends VersionReceiver{
 
         @Override
-        public void onReceive(Context context, Intent intent) {
-            Version version = Broadcasts.getData(intent);
-            System.out.println(">> Broadcast === \n" + version);
+        protected void onVersion(Version newVersion) {
+            System.out.println(">> Broadcast === \n" + newVersion);
         }
     }
 
-    private TestReceiver testReceiver = new TestReceiver();
+    private NewVersionReceiver newVersionReceiver = new NewVersionReceiver();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
-
         init();
-
     }
 
     private void init(){
@@ -87,19 +76,20 @@ public class MainActivity extends Activity{
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-        Broadcasts.register(this, testReceiver);
+    protected void onStart() {
+        super.onStart();
+        AnyVersion.registerReceiver(this, newVersionReceiver);
     }
 
     @Override
-    protected void onPause() {
-        super.onPause();
-        Broadcasts.unregister(this, testReceiver);
+    protected void onStop() {
+        super.onStop();
+        AnyVersion.unregisterReceiver(this, newVersionReceiver);
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        AnyVersion.destroy();
     }
 }

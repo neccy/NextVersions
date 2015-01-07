@@ -14,7 +14,7 @@ import android.support.v4.content.LocalBroadcastManager;
  * 2015-01-04
  * 使用 NotifyStyle.Broadcast 新版本处理方式时，需使用此工具类来处理 Receiver 的注册和反注册操作。
  */
-public class Broadcasts {
+class Broadcasts {
 
     static final String BROADCAST_ACTION = AnyVersion.class.getName();
     static final String BROADCAST_DATA = "data";
@@ -31,7 +31,7 @@ public class Broadcasts {
     /**
      * 注册广播接收处理类
      */
-    public static void register(Context context, BroadcastReceiver receiver){
+    static void register(Context context, BroadcastReceiver receiver){
         LocalBroadcastManager manager = LocalBroadcastManager.getInstance(context);
         manager.registerReceiver(receiver, new IntentFilter(BROADCAST_ACTION));
     }
@@ -39,15 +39,9 @@ public class Broadcasts {
     /**
      * 反注册广播处理类
      */
-    public static void unregister(Context context, BroadcastReceiver receiver){
+    static void unregister(Context context, BroadcastReceiver receiver){
         LocalBroadcastManager manager = LocalBroadcastManager.getInstance(context);
         manager.unregisterReceiver(receiver);
     }
 
-    /**
-     * 从 Intent 中获取 Version 对象
-     */
-    public static Version getData(Intent intent){
-        return intent.getParcelableExtra(BROADCAST_DATA);
-    }
 }

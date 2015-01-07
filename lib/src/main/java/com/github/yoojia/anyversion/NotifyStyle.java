@@ -9,7 +9,7 @@ package com.github.yoojia.anyversion;
 public enum NotifyStyle {
 
     /**
-     * 使用 Android 的广播机制来处理新版本
+     * 使用广播机制来处理新版本
      */
     Broadcast,
 
@@ -23,8 +23,4 @@ public enum NotifyStyle {
      */
     Callback,
 
-    /**
-     * 使用通知栏来处理新版本
-     */
-    Notification
 }

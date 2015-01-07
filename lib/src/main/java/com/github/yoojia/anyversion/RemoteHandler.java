@@ -11,10 +11,10 @@ import java.io.IOException;
 public abstract class RemoteHandler implements Runnable {
 
     private String url;
-    private Parser parser;
+    private VersionParser parser;
     private Callback callback;
 
-    final void setOptions(String url, Parser parser, Callback callback){
+    final void setOptions(String url, VersionParser parser, Callback callback){
         this.url =  url;
         this.parser = parser;
         this.callback = callback;

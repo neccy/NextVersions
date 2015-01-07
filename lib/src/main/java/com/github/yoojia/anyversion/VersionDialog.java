@@ -3,6 +3,7 @@ package com.github.yoojia.anyversion;
 import android.app.AlertDialog;
 import android.app.Application;
 import android.content.DialogInterface;
+import android.text.Html;
 import android.view.WindowManager;
 
 /**
@@ -17,7 +18,7 @@ class VersionDialog {
     public VersionDialog(final Application context, final Version version, final Downloads downloads) {
         AlertDialog.Builder builder = new AlertDialog.Builder(context, R.style.Theme_System_Alert)
                 .setTitle(version.name)
-                .setMessage(version.note)
+                .setMessage(Html.fromHtml(version.note))
                 .setCancelable(false)
                 .setNegativeButton(R.string.later, new DialogInterface.OnClickListener() {
                     @Override

@@ -1,6 +1,7 @@
 package com.github.yoojia.anyversion;
 
 import android.app.Application;
+import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Handler;
@@ -31,7 +32,7 @@ public class AnyVersion {
 
     Application context;
 
-    final Parser parser;
+    final VersionParser parser;
 
     private Future<?> workingTask;
     private Callback callback;
@@ -55,7 +56,7 @@ public class AnyVersion {
         }
     }
 
-    private AnyVersion(Application context, Parser parser) {
+    private AnyVersion(Application context, VersionParser parser) {
         Log.d(TAG, "AnyVersion init...");
         this.context = context;
         this.parser = parser;
@@ -81,16 +82,19 @@ public class AnyVersion {
     }
 
     /**
-     * 初始化 AnyVersion
+     * 初始化 AnyVersion。
      * @param context 必须是 Application
-     * @param parser 服务端响应数据解析器
+     * @param parser 服务端响应数据解析接口
      */
-    public static void init(Application context, Parser parser){
+    public static void init(Application context, VersionParser parser){
         Preconditions.requiredMainUIThread();
-        Log.i(TAG, "!!! We recommend init AnyVersion on YOUR-Application.onCreate(...) !!!");
         LOCK.tryLock();
         try{
-            if (ANY_VERSION != null) throw new IllegalStateException("Duplicate init AnyVersion singleton !");
+            if (ANY_VERSION != null) {
+                Log.e(TAG, "Duplicate init AnyVersion singleton !");
+                Log.e(TAG, "!!! We recommend init AnyVersion on YOUR-Application.onCreate(...) !!!");
+                return;
+            }
         }finally {
             LOCK.unlock();
         }
@@ -102,6 +106,28 @@ public class AnyVersion {
         }
         ANY_VERSION = new AnyVersion(context, parser);
         ANY_VERSION.installations.register(context);
+    }
+
+    /**
+     * 销毁 AnyVersion 时，会将正在下载的任务中止，将自动安装功能关闭。
+     */
+    public static void destroy(){
+        ANY_VERSION.downloads.destroy(ANY_VERSION.context);
+        ANY_VERSION.installations.unregister(ANY_VERSION.context);
+    }
+
+    /**
+     * 注册接收新版本通知的 Receiver。
+     */
+    public static void registerReceiver(Context context, VersionReceiver receiver){
+        Broadcasts.register(context, receiver);
+    }
+
+    /**
+     * 反注册接收新版本通知的 Receiver
+     */
+    public static void unregisterReceiver(Context context, VersionReceiver receiver){
+        Broadcasts.unregister(context, receiver);
     }
 
     /**

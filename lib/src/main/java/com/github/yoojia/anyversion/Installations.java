@@ -27,16 +27,21 @@ class Installations {
             query.setFilterById(reference);
             DownloadManager download = (DownloadManager)context.getSystemService(Context.DOWNLOAD_SERVICE);
             Cursor cursor = download.query(query);
-            if (cursor.moveToFirst()) {
-                int fileNameIdx = cursor.getColumnIndex(DownloadManager.COLUMN_LOCAL_FILENAME);
-                String fileName = cursor.getString(fileNameIdx);
-                // 自动安装
-                Intent install = new Intent(Intent.ACTION_VIEW);
-                install.setDataAndType(Uri.fromFile(new File(fileName)), "application/vnd.android.package-archive");
-                install.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                context.startActivity(install);
+            try{
+                if (cursor.moveToFirst()) {
+                    int fileNameIdx = cursor.getColumnIndex(DownloadManager.COLUMN_LOCAL_FILENAME);
+                    String fileName = cursor.getString(fileNameIdx);
+                    if (fileName.endsWith(".apk")){
+                        Intent install = new Intent(Intent.ACTION_VIEW);
+                        install.setDataAndType(Uri.fromFile(new File(fileName)), "application/vnd.android.package-archive");
+                        install.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        context.startActivity(install);
+                    }
+                }
+            }finally {
+                cursor.close();
             }
-            cursor.close();
+
         }
     };
 
