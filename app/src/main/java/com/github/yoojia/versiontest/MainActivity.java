@@ -90,6 +90,5 @@ public class MainActivity extends Activity{
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        AnyVersion.destroy();
     }
 }

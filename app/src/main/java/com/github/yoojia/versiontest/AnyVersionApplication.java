@@ -1,10 +1,11 @@
 package com.github.yoojia.versiontest;
 
 import android.app.Application;
+import android.util.Log;
 
 import com.github.yoojia.anyversion.AnyVersion;
-import com.github.yoojia.anyversion.VersionParser;
 import com.github.yoojia.anyversion.Version;
+import com.github.yoojia.anyversion.VersionParser;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -20,7 +21,7 @@ public class AnyVersionApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-
+        Log.d("App",">>>>>>>>>>> AnyVersion App init ...");
         AnyVersion.init(this, new VersionParser() {
             @Override
             public Version onParse(String response) {
