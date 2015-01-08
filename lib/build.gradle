@@ -1,5 +1,14 @@
 apply plugin: 'com.android.library'
 
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.0'
+    }
+}
+
 android {
     compileSdkVersion 21
     buildToolsVersion "21.1.2"
@@ -23,4 +32,5 @@ dependencies {
     compile 'com.android.support:appcompat-v7:21.0.3'
 }
 
+apply from: 'https://raw.githubusercontent.com/yoojia/Gradles/master/bintray.gradle'
 apply from: 'https://raw.githubusercontent.com/yoojia/Gradles/master/publish_aar.gradle'

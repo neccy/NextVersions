@@ -45,8 +45,8 @@ public class AnyVersion {
     private final Downloads downloads;
 
     public static AnyVersion getInstance(){
-        LOCK.tryLock();
         try{
+            LOCK.lock();
             if (ANY_VERSION == null) {
                 throw new IllegalStateException("AnyVersion NOT init !");
             }
@@ -88,11 +88,11 @@ public class AnyVersion {
      */
     public static void init(Application context, VersionParser parser){
         Preconditions.requiredMainUIThread();
-        LOCK.tryLock();
         try{
+            LOCK.lock();
             if (ANY_VERSION != null) {
-                Log.e(TAG, "Duplicate init AnyVersion singleton !");
-                Log.e(TAG, "!!! We recommend init AnyVersion on YOUR-Application.onCreate(...) !!!");
+                Log.e(TAG, "Duplicate init AnyVersion ! This VersionParser  will be discard !");
+                Log.e(TAG, "AnyVersion recommend init on YOUR-Application.onCreate(...) .");
                 return;
             }
         }finally {
@@ -106,14 +106,6 @@ public class AnyVersion {
         }
         ANY_VERSION = new AnyVersion(context, parser);
         ANY_VERSION.installations.register(context);
-    }
-
-    /**
-     * 销毁 AnyVersion 时，会将正在下载的任务中止，将自动安装功能关闭。
-     */
-    public static void destroy(){
-        ANY_VERSION.downloads.destroy(ANY_VERSION.context);
-        ANY_VERSION.installations.unregister(ANY_VERSION.context);
     }
 
     /**
