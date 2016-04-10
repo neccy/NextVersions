@@ -21,4 +21,5 @@
         android:text="DIALOG"
         android:id="@+id/dialog"
         android:layout_gravity="center_horizontal" />
+
 </LinearLayout>
