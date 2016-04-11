@@ -10,12 +10,12 @@ buildscript {
 }
 
 android {
-    compileSdkVersion 21
-    buildToolsVersion "21.1.2"
+    compileSdkVersion rootProject.ext.compileSdkVersion
+    buildToolsVersion rootProject.ext.buildToolsVersion
 
     defaultConfig {
         minSdkVersion 14
-        targetSdkVersion 21
+        targetSdkVersion 23
         versionCode 1
         versionName version
     }
@@ -29,8 +29,8 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.android.support:appcompat-v7:21.0.3'
-}
+    compile rootProject.ext.supportV7_appcompat
 
-apply from: 'https://raw.githubusercontent.com/yoojia/Gradles/master/bintray.gradle'
-apply from: 'https://raw.githubusercontent.com/yoojia/Gradles/master/publish_aar.gradle'
+//    apply from: 'https://raw.githubusercontent.com/yoojia/Gradles/master/bintray.gradle'
+//    apply from: 'https://raw.githubusercontent.com/yoojia/Gradles/master/publish_aar.gradle'
+}
