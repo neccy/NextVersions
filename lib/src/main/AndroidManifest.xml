@@ -1,5 +1,1 @@
-<manifest package="com.github.yoojia.anyversion">
-
-    <application />
-
-</manifest>
+<manifest package="com.github.yoojia.versions"/>

@@ -1,4 +1,4 @@
 <resources>
-    <string name="update_now">立即更新</string>
-    <string name="later">稍后</string>
+    <string name="name_upgrade">立即更新</string>
+    <string name="name_later">稍后</string>
 </resources>
