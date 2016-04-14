@@ -7,6 +7,7 @@ import android.util.Log;
 import com.github.yoojia.versions.Source;
 import com.github.yoojia.versions.Version;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
@@ -60,16 +61,25 @@ public class RemoteJSONSource implements Source {
             }
             final JSONTokener tokener = new JSONTokener(responseText);
             final JSONObject json = (JSONObject) tokener.nextValue();
-            return new Version(json.has("code") ? json.getInt("code") : 0,
-                    json.has("name") ? json.getString("name") : "",
-                    json.has("note") ? json.getString("note") : "",
-                    json.has("url") ? json.getString("url") : "",
-                    json.has("level") ? json.getInt("level") : 0,
-                    json.has("channel") ? json.getString("channel") : "");
+            return new Version(
+                    getInt(json, "code"),
+                    getString(json, "name"),
+                    getString(json, "note"),
+                    getString(json, "url"),
+                    getInt(json, "level"),
+                    getString(json, "channel"));
         }catch (Throwable errors) {
             Log.e(TAG, "When network fetch JSON response", errors);
             return Version.NONE;
         }
+    }
+
+    private static String getString(JSONObject json, String field) throws JSONException {
+        return json.has(field) ? json.getString(field) : "";
+    }
+
+    private static int getInt(JSONObject json, String field) throws JSONException {
+        return json.has(field) ? json.getInt(field) : 0;
     }
 
     private StringBuilder toStringBuffer(InputStream is) throws IOException {
