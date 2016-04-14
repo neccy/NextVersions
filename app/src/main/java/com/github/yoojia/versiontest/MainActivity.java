@@ -4,7 +4,7 @@ import android.app.Activity;
 import android.os.Bundle;
 
 import com.github.yoojia.versions.NextVersions;
-import com.github.yoojia.versions.impl.JSONSource;
+import com.github.yoojia.versions.impl.RemoteJSONSource;
 
 /**
  * Created by Yoojia.Chen
@@ -19,7 +19,7 @@ public class MainActivity extends Activity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mNextVersions = new NextVersions(this);
-        mNextVersions.addSource(new JSONSource("https://raw.githubusercontent.com/yoojia/AnyVersion/develop/version.json"));
+        mNextVersions.addSource(new RemoteJSONSource("https://raw.githubusercontent.com/yoojia/AnyVersion/develop/version.json"));
     }
 
     @Override
