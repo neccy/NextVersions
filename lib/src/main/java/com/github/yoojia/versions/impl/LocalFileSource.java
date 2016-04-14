@@ -56,15 +56,7 @@ public class LocalFileSource implements Source {
         final PackageManager pm = mContext.getPackageManager();
         final String pkgName = mContext.getPackageName();
         final List<Version> versions = new ArrayList<>(apks.size());
-        for (File file : apks) {
-            final String uri = file.getAbsolutePath();
-            final PackageInfo info = pm.getPackageArchiveInfo(uri, PackageManager.GET_ACTIVITIES);
-            if (info != null && info.packageName.equals(pkgName)) {
-                versions.add(new Version(info.versionCode, info.versionName,
-                        pm.getApplicationLabel(info.applicationInfo).toString(),
-                        uri));
-            }
-        }
+        deepFind(versions, apks, pm, pkgName);
         if (versions.isEmpty()) {
             return Version.NONE;
         }
@@ -78,4 +70,19 @@ public class LocalFileSource implements Source {
         return sorted[0];
     }
 
+    private void deepFind(List<Version> output, List<File> files, PackageManager pm, String pkgName) {
+        for (File file : files) {
+            if (!file.isDirectory()) {
+                final String uri = file.getAbsolutePath();
+                final PackageInfo info = pm.getPackageArchiveInfo(uri, PackageManager.GET_ACTIVITIES);
+                if (info != null && info.packageName.equals(pkgName)) {
+                    output.add(new Version(info.versionCode, info.versionName,
+                            pm.getApplicationLabel(info.applicationInfo).toString(),
+                            uri));
+                }
+            }else{
+                deepFind(output, Arrays.asList(file.listFiles()), pm, pkgName);
+            }
+        }
+    }
 }
