@@ -6,6 +6,7 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.github.yoojia.versions.impl.SimpleVerifier;
 import com.github.yoojia.versions.impl.SystemDialogNotify;
 
 import java.util.List;
@@ -24,6 +25,8 @@ public class NextVersions {
     private final List<Source> mSources = new CopyOnWriteArrayList<>();
     private final SourceFetcher mFetcher;
 
+    private Verifier mVersionVerifier = new SimpleVerifier();
+
     public NextVersions(Context context) {
         final Version appVersion = getAppVersion(context.getApplicationContext());
         System.out.println("--> App version: " + appVersion);
@@ -31,8 +34,7 @@ public class NextVersions {
             @Override
             public boolean onVersion(Version remoteVersion) {
                 System.out.println("--> Remote version: " + remoteVersion);
-                // 发现新版本
-                if (remoteVersion.isNewerThen(appVersion)) {
+                if (mVersionVerifier.accept(remoteVersion, appVersion)) {
                     Notify notify = mNotifications.getPresent(remoteVersion.level);
                     if (notify == null) {
                         notify = mNotifications.getPresent(NotifyLevel.DEFAULT);
@@ -62,6 +64,17 @@ public class NextVersions {
      */
     public void setDownloader(Downloader downloader) {
 
+    }
+
+    /**
+     * 设置版本校验接口
+     * @param versionVerifier 版本校验接口
+     */
+    public void setVersionVerifier(Verifier versionVerifier) {
+        if (versionVerifier == null) {
+            throw new NullPointerException();
+        }
+        mVersionVerifier = versionVerifier;
     }
 
     /**

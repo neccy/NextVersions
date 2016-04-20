@@ -57,7 +57,7 @@ public class RemoteJSONSource implements Source {
             final InputStream is = getStreamFromNetwork(mURL);
             final String responseText = toStringBuffer(is).toString();
             if (TextUtils.isEmpty(responseText)) {
-                throw new IOException("Response string NOT JSON object text: " + responseText);
+                throw new IOException("Empty response text");
             }
             final JSONTokener tokener = new JSONTokener(responseText);
             final JSONObject json = (JSONObject) tokener.nextValue();
@@ -68,6 +68,9 @@ public class RemoteJSONSource implements Source {
                     getString(json, "url"),
                     getInt(json, "level"),
                     getString(json, "channel"));
+        }catch (JSONException error) {
+            Log.e(TAG, "Response not JSON text", error);
+            return Version.NONE;
         }catch (Throwable errors) {
             Log.e(TAG, "When network fetch JSON response", errors);
             return Version.NONE;

@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * 从指定本机文件夹中获取更新源信息。
@@ -23,6 +24,11 @@ public class LocalFileSource implements Source {
 
     private final String mDirPath;
     private final Context mContext;
+
+    /**
+     * 递归查找文件夹深度,默认为3级
+     */
+    private final AtomicInteger mMaxDirDeep = new AtomicInteger(3);
 
     public LocalFileSource(Context context, String mDirPath) {
         this.mDirPath = mDirPath;
@@ -52,11 +58,22 @@ public class LocalFileSource implements Source {
         }
     }
 
+    /**
+     * 设置查找文件夹深度，最大深度为5级
+     * @param deep 文件夹深度
+     */
+    public void setFindDirDeep(int deep) {
+        if (deep > 5) {
+            deep = 5;
+        }
+        mMaxDirDeep.set(deep);
+    }
+
     private Version findLatestApkVersion(List<File> apks){
         final PackageManager pm = mContext.getPackageManager();
         final String pkgName = mContext.getPackageName();
         final List<Version> versions = new ArrayList<>(apks.size());
-        deepFind(versions, apks, pm, pkgName);
+        limitedFind(versions, apks, pm, pkgName);
         if (versions.isEmpty()) {
             return Version.NONE;
         }
@@ -70,7 +87,8 @@ public class LocalFileSource implements Source {
         return sorted[0];
     }
 
-    private void deepFind(List<Version> output, List<File> files, PackageManager pm, String pkgName) {
+    private void limitedFind(List<Version> output, List<File> files, PackageManager pm, String pkgName) {
+        mMaxDirDeep.decrementAndGet();
         for (File file : files) {
             if (!file.isDirectory()) {
                 final String uri = file.getAbsolutePath();
@@ -81,7 +99,9 @@ public class LocalFileSource implements Source {
                             uri));
                 }
             }else{
-                deepFind(output, Arrays.asList(file.listFiles()), pm, pkgName);
+                if (mMaxDirDeep.get() > 0) {
+                    limitedFind(output, Arrays.asList(file.listFiles()), pm, pkgName);
+                }
             }
         }
     }

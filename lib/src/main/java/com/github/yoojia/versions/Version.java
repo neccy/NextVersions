@@ -60,7 +60,7 @@ public class Version {
      * @return 是否比指定版本要新
      */
     public boolean isNewerThen(Version version) {
-        return isSameChannel(version) && (code > version.code);
+        return code > version.code;
     }
 
     /**
