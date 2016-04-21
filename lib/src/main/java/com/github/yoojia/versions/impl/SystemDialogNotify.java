@@ -9,6 +9,8 @@ import android.os.Looper;
 import android.text.Html;
 import android.view.WindowManager;
 
+import com.github.yoojia.versions.Download;
+import com.github.yoojia.versions.NextContext;
 import com.github.yoojia.versions.Notify;
 import com.github.yoojia.versions.NotifyLevel;
 import com.github.yoojia.versions.R;
@@ -39,7 +41,7 @@ public class SystemDialogNotify implements Notify{
     }
 
     @Override
-    public void onShow(final Version version) {
+    public void onShow(final NextContext context, final Version version) {
         final AlertDialog.Builder builder = new AlertDialog.Builder(mAppContext, R.style.Theme_System_Alert)
                 .setTitle(version.name)
                 .setMessage(version.note)
@@ -52,7 +54,8 @@ public class SystemDialogNotify implements Notify{
                 .setPositiveButton(R.string.name_upgrade, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        //downloads.submit(context, version);
+                        final Download download = context.getDownload();
+                        download.submit(version);
                         dialog.cancel();
                     }
                 });

@@ -15,7 +15,8 @@ public interface Notify {
 
     /**
      * 将新版本通知展示给用户
+     * @param context NextContext
      * @param version 新版本
      */
-    void onShow(Version version);
+    void onShow(NextContext context, Version version);
 }

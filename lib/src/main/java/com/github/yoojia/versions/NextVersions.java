@@ -6,6 +6,7 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.github.yoojia.versions.impl.AndroidDownload;
 import com.github.yoojia.versions.impl.SimpleVerifier;
 import com.github.yoojia.versions.impl.SystemDialogNotify;
 
@@ -25,21 +26,23 @@ public class NextVersions {
     private final List<Source> mSources = new CopyOnWriteArrayList<>();
     private final SourceFetcher mFetcher;
 
-    private Verifier mVersionVerifier = new SimpleVerifier();
+    private Verifier mVerifier = new SimpleVerifier();
+    private Download mDownload = new AndroidDownload();
 
     public NextVersions(Context context) {
-        final Version appVersion = getAppVersion(context.getApplicationContext());
-        System.out.println("--> App version: " + appVersion);
+        final Version localVersion = getAppVersion(context.getApplicationContext());
+        System.out.println("--> App version: " + localVersion);
         mFetcher = new SourceFetcher(new SourceFetcher.OnVersionHandler() {
             @Override
             public boolean onVersion(Version remoteVersion) {
                 System.out.println("--> Remote version: " + remoteVersion);
-                if (mVersionVerifier.accept(remoteVersion, appVersion)) {
+                if (mVerifier.accept(remoteVersion, localVersion)) {
                     Notify notify = mNotifications.getPresent(remoteVersion.level);
                     if (notify == null) {
                         notify = mNotifications.getPresent(NotifyLevel.DEFAULT);
                     }
-                    notify.onShow(remoteVersion);
+                    notify.onShow(new NextContext(NextVersions.this, notify, localVersion, mDownload),
+                            remoteVersion);
                     return true;
                 }else{
                     return false;
@@ -60,21 +63,24 @@ public class NextVersions {
 
     /**
      * 设置下载器接口
-     * @param downloader 下载器
+     * @param download 下载器
      */
-    public void setDownloader(Downloader downloader) {
-
+    public void setDownload(Download download) {
+        if (download == null) {
+            throw new NullPointerException();
+        }
+        mDownload = download;
     }
 
     /**
      * 设置版本校验接口
-     * @param versionVerifier 版本校验接口
+     * @param verifier 版本校验接口
      */
-    public void setVersionVerifier(Verifier versionVerifier) {
-        if (versionVerifier == null) {
+    public void setVerifier(Verifier verifier) {
+        if (verifier == null) {
             throw new NullPointerException();
         }
-        mVersionVerifier = versionVerifier;
+        mVerifier = verifier;
     }
 
     /**
@@ -110,7 +116,7 @@ public class NextVersions {
             return new Version(code, name, packageName, "installed-apk", NotifyLevel.DEFAULT, channel);
         } catch (Exception e) {
             Log.e(TAG, "Package not found! Pkg:" + context.getPackageName(), e);
-            return new Version(Integer.MIN_VALUE, "PKG-NOTFOUND", null, null);
+            return new Version(Integer.MIN_VALUE, "PKG-NOT-FOUND", null, null);
         }
     }
 

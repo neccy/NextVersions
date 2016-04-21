@@ -28,7 +28,7 @@ class SourceFetcher {
                         await();
                     }
                 }
-                System.err.println("- Daemon Thread stop!!!");
+                System.err.println("- Source fetcher daemon thread STOP !!!");
             }
 
             private void await(){

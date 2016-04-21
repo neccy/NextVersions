@@ -5,5 +5,7 @@ package com.github.yoojia.versions;
  * @author YOOJIA CHEN (yoojiachen@gmail.com)
  * @since 2.0
  */
-public interface Downloader {
+public interface Download {
+
+    void submit(Version version);
 }
