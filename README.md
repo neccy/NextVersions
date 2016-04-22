@@ -1,6 +1,6 @@
 # AnyVersion - Android App 版本自动更新库
 
-Android App 版本更新提示库 - An Android APP new version update library.
+Android App 版本更新升级库。
 
 ## 1. 基本使用教程
 
@@ -19,7 +19,7 @@ AnyVersion 最新版本已推送到 Maven Central 和 JCenter 两个服务中。
 
 	dependencies {
 		... others ...
-	    compile 'com.github.yoojia:versions:2.0'
+	    compile 'com.github.yoojia:next-versions:2.0-alpha'
 	}
 
 ### Step 2 - Android 权限
@@ -36,11 +36,11 @@ AnyVersion 需要的权限非常少，在 App 模块的 `AndroidManifest.xml` �
 
 NextVersion 内置了多种更新源的实现。
 
-- 1. RemoteJSONSource 部署在服务器上返回指定**格式**JSON数据的URL更新源。
+- 1. RemoteSource 部署在服务器上返回指定**格式**JSON数据的URL更新源。
 
 > 这是最常用的场景，通常的更新APK方式都是通过网络读取并下载安装。
 
-- 2. LocalFileSource 指定本地文件夹路径（如U盘目录），扫描目录下的APK文件，读取最新版本的APK文件。
+- 2. DirectorySource 指定本地文件夹路径（如U盘目录），扫描目录下的APK文件，读取最新版本的APK文件。
 
 > 这是少有但也属于正常需求的场景。我厂经常使用这种方式给客户更新APK。
 
