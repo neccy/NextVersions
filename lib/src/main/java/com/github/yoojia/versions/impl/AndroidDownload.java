@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.text.TextUtils;
 
 import com.github.yoojia.versions.Download;
+import com.github.yoojia.versions.NextVersions;
 import com.github.yoojia.versions.Version;
 
 /**
@@ -14,8 +15,6 @@ import com.github.yoojia.versions.Version;
  * @since 2.0
  */
 public class AndroidDownload implements Download {
-
-    public static final String MIME_TYPE = "application/vnd.android.package-archive";
 
     private static final String DOWNLOAD_DIR = "Versions";
 
@@ -33,18 +32,19 @@ public class AndroidDownload implements Download {
         request.setDestinationInExternalPublicDir(DOWNLOAD_DIR, getAPKName(version));
         request.setTitle(version.name);
         request.setDescription(version.note);
-        request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+        // 默认只在WIFI下更新
         request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI);
-        request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_HIDDEN);
-        request.setMimeType(MIME_TYPE);
+        // 下载中和下载完成后都显示进度条
+        request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+        request.setMimeType(NextVersions.APK_MIME_TYPE);
         mDownloadId = mDownloadManager.enqueue(request);
     }
 
     private String getAPKName(Version version) {
         final Uri uri = Uri.parse(version.url);
         final String name = uri.getLastPathSegment();
-        if (TextUtils.isEmpty(name) || ! name.endsWith(".apk")) {
-            return version.name + ".apk";
+        if (TextUtils.isEmpty(name) || ! name.endsWith(NextVersions.APK_SUFFIX)) {
+            return version.name + NextVersions.APK_SUFFIX;
         }else{
             return name;
         }

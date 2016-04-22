@@ -36,9 +36,9 @@ import java.net.URL;
  * @author YOOJIA CHEN (yoojiachen@gmail.com)
  * @since 2.0
  */
-public class RemoteJSONSource implements Source {
+public class RemoteSource implements Source {
 
-    private static final String TAG = RemoteJSONSource.class.getSimpleName();
+    private static final String TAG = RemoteSource.class.getSimpleName();
 
     private static final int DEFAULT_HTTP_CONNECT_TIMEOUT = 5 * 1000;
     private static final int DEFAULT_HTTP_READ_TIMEOUT = 10 * 1000;
@@ -47,7 +47,7 @@ public class RemoteJSONSource implements Source {
 
     private final String mURL;
 
-    public RemoteJSONSource(String url) {
+    public RemoteSource(String url) {
         mURL = url;
     }
 

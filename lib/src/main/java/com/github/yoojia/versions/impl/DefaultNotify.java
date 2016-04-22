@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Handler;
 import android.os.Looper;
-import android.text.Html;
 import android.view.WindowManager;
 
 import com.github.yoojia.versions.Download;
@@ -21,16 +20,16 @@ import com.github.yoojia.versions.Version;
  * @author YOOJIA CHEN (yoojiachen@gmail.com)
  * @since 2.0
  */
-public class SystemDialogNotify implements Notify{
+public class DefaultNotify implements Notify{
 
     private final int mLevel;
     private final Context mAppContext;
 
-    public SystemDialogNotify(Context context) {
+    public DefaultNotify(Context context) {
         this(context, NotifyLevel.SYSTEM_DIALOG);
     }
 
-    public SystemDialogNotify(Context context, int level) {
+    public DefaultNotify(Context context, int level) {
         mAppContext = context.getApplicationContext();
         mLevel = level;
     }

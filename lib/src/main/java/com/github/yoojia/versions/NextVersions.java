@@ -1,5 +1,7 @@
 package com.github.yoojia.versions;
 
+import android.app.Activity;
+import android.app.Application;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -8,7 +10,7 @@ import android.util.Log;
 
 import com.github.yoojia.versions.impl.AndroidDownload;
 import com.github.yoojia.versions.impl.SimpleVerifier;
-import com.github.yoojia.versions.impl.SystemDialogNotify;
+import com.github.yoojia.versions.impl.DefaultNotify;
 
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -21,22 +23,54 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class NextVersions {
 
+    public static final String APK_MIME_TYPE = "application/vnd.android.package-archive";
+    public static final String APK_SUFFIX = ".apk";
+
     public static final String TAG = NextVersions.class.getSimpleName();
 
     private final AtomicBoolean mLogEnabled = new AtomicBoolean(true);
     private final Notifications mNotifications = new Notifications();
     private final List<Source> mAllSources = new CopyOnWriteArrayList<>();
+    private final NextInstallation mInstallation = new NextInstallation();
+
     private final SourceFetcher mFetcher;
 
     private Verifier mVerifier = new SimpleVerifier();
     private Download mDownload;
 
-    public NextVersions(Context context) {
-        mDownload = new AndroidDownload(context);
-        final Version localVersion = getAppVersion(context.getApplicationContext());
+    public NextVersions(final Activity context) {
+        final Application appContext = (Application) context.getApplicationContext();
+        mDownload = new AndroidDownload(appContext);
+        final Version localVersion = getAppVersion(appContext);
         mFetcher = new SourceFetcher(new OnVersionHandler(localVersion));
         // 默认新版本提示
-        putNotify(new SystemDialogNotify(context, NotifyLevel.DEFAULT));
+        putNotify(new DefaultNotify(appContext, NotifyLevel.DEFAULT));
+        // 自动监听下载完成广播
+        appContext.registerActivityLifecycleCallbacks(new LifeCycleInject(){
+            @Override
+            public void onActivityResumed(Activity activity) {
+                super.onActivityResumed(activity);
+                if (context == activity) {
+                    mInstallation.register(activity);
+                }
+            }
+
+            @Override
+            public void onActivityPaused(Activity activity) {
+                super.onActivityPaused(activity);
+                if (context == activity) {
+                    mInstallation.unregister(activity);
+                }
+            }
+
+            @Override
+            public void onActivityDestroyed(Activity activity) {
+                super.onActivityDestroyed(activity);
+                if (context == activity) {
+                    appContext.unregisterActivityLifecycleCallbacks(this);
+                }
+            }
+        });
         if (mLogEnabled.get()) {
             Log.d(TAG, "--> App version: " + localVersion);
         }

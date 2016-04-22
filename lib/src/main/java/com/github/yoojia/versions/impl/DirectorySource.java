@@ -19,7 +19,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @author YOOJIA CHEN (yoojiachen@gmail.com)
  * @since 2.0
  */
-public class LocalFileSource implements Source {
+public class DirectorySource implements Source {
 
     private final String mDirPath;
     private final Context mContext;
@@ -29,7 +29,7 @@ public class LocalFileSource implements Source {
      */
     private final AtomicInteger mMaxDirDeep = new AtomicInteger(3);
 
-    public LocalFileSource(Context context, String mDirPath) {
+    public DirectorySource(Context context, String mDirPath) {
         this.mDirPath = mDirPath;
         mContext = context.getApplicationContext();
     }
