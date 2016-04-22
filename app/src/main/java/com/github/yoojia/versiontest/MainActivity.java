@@ -19,7 +19,7 @@ public class MainActivity extends Activity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mNextVersions = new NextVersions(this);
-        mNextVersions.addSource(new RemoteJSONSource("https://raw.githubusercontent.com/yoojia/AnyVersion/develop/version.json"));
+        mNextVersions.addSource(new RemoteJSONSource("https://github.com/yoojia/NextVersions/blob/develop/demo/version.json"));
     }
 
     @Override
