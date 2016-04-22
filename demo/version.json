@@ -3,5 +3,5 @@
   "name": "v1.0-final",
   "note": "A test release note via github",
   "channel": "github-release",
-  "url": "https://github.com/yoojia/NextVersions/blob/develop/demo/NextVersions-release.apk"
+  "url": "https://raw.githubusercontent.com/yoojia/NextVersions/develop/demo/NextVersions-release.apk"
 }
