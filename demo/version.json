@@ -1,0 +1,7 @@
+{
+  "code": 1000,
+  "name": "v1.0-final",
+  "note": "A test release note via github",
+  "channel": "github-release",
+  "url": "https://raw.githubusercontent.com/yoojia/NextVersions/v2/NextVersions-release.apk"
+}

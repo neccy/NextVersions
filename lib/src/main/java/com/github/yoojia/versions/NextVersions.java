@@ -12,6 +12,7 @@ import com.github.yoojia.versions.impl.SystemDialogNotify;
 
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  *
@@ -22,35 +23,23 @@ public class NextVersions {
 
     public static final String TAG = NextVersions.class.getSimpleName();
 
+    private final AtomicBoolean mLogEnabled = new AtomicBoolean(true);
     private final Notifications mNotifications = new Notifications();
-    private final List<Source> mSources = new CopyOnWriteArrayList<>();
+    private final List<Source> mAllSources = new CopyOnWriteArrayList<>();
     private final SourceFetcher mFetcher;
 
     private Verifier mVerifier = new SimpleVerifier();
-    private Download mDownload = new AndroidDownload();
+    private Download mDownload;
 
     public NextVersions(Context context) {
+        mDownload = new AndroidDownload(context);
         final Version localVersion = getAppVersion(context.getApplicationContext());
-        System.out.println("--> App version: " + localVersion);
-        mFetcher = new SourceFetcher(new SourceFetcher.OnVersionHandler() {
-            @Override
-            public boolean onVersion(Version remoteVersion) {
-                System.out.println("--> Remote version: " + remoteVersion);
-                if (mVerifier.accept(remoteVersion, localVersion)) {
-                    Notify notify = mNotifications.getPresent(remoteVersion.level);
-                    if (notify == null) {
-                        notify = mNotifications.getPresent(NotifyLevel.DEFAULT);
-                    }
-                    notify.onShow(new NextContext(NextVersions.this, notify, localVersion, mDownload),
-                            remoteVersion);
-                    return true;
-                }else{
-                    return false;
-                }
-            }
-        });
+        mFetcher = new SourceFetcher(new OnVersionHandler(localVersion));
         // 默认新版本提示
         putNotify(new SystemDialogNotify(context, NotifyLevel.DEFAULT));
+        if (mLogEnabled.get()) {
+            Log.d(TAG, "--> App version: " + localVersion);
+        }
     }
 
     /**
@@ -58,7 +47,7 @@ public class NextVersions {
      * @param source 更新源
      */
     public void addSource(Source source) {
-        mSources.add(source);
+        mAllSources.add(source);
     }
 
     /**
@@ -95,7 +84,11 @@ public class NextVersions {
      * 检查更新
      */
     public void checkUpdate(){
-        mFetcher.submit(mSources);
+        mFetcher.submit(mAllSources);
+    }
+
+    public void setLogEnabled(boolean enabled) {
+        mLogEnabled.set(enabled);
     }
 
     private Version getAppVersion(Context context) {
@@ -117,6 +110,33 @@ public class NextVersions {
         } catch (Exception e) {
             Log.e(TAG, "Package not found! Pkg:" + context.getPackageName(), e);
             return new Version(Integer.MIN_VALUE, "PKG-NOT-FOUND", null, null);
+        }
+    }
+
+    private class OnVersionHandler implements SourceFetcher.OnVersionHandler {
+
+        private final Version mLocalVersion;
+
+        private OnVersionHandler(Version localVersion) {
+            mLocalVersion = localVersion;
+        }
+
+        @Override
+        public boolean onVersion(Version remoteVersion) {
+            if (mLogEnabled.get()) {
+                Log.d(TAG, "--> Remote version: " + remoteVersion);
+            }
+            if (mVerifier.accept(remoteVersion, mLocalVersion)) {
+                Notify notify = mNotifications.getPresent(remoteVersion.level);
+                if (notify == null) {
+                    notify = mNotifications.getPresent(NotifyLevel.DEFAULT);
+                }
+                final NextContext ctx = new NextContext(NextVersions.this, notify, mLocalVersion, mDownload);
+                notify.onShow(ctx, remoteVersion);
+                return true;
+            }else{
+                return false;
+            }
         }
     }
 

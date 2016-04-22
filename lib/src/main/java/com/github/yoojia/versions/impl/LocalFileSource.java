@@ -15,8 +15,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * 从指定本机文件夹中获取更新源信息。
- * 这个功能通常用于自动更新SD卡指定目录的APK文件。
+ * 从指定本机文件夹中获取更新源信息。这个功能通常用于自动更新SD卡指定目录的APK文件。
  * @author YOOJIA CHEN (yoojiachen@gmail.com)
  * @since 2.0
  */

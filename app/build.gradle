@@ -5,15 +5,28 @@ android {
     buildToolsVersion '23.0.2'
 
     defaultConfig {
-        applicationId "com.github.yoojia.anyversion"
+        applicationId "com.github.yoojia.nextversions.app"
         minSdkVersion 15
         targetSdkVersion 23
         versionCode 1
         versionName "1.0"
     }
+
+    signingConfigs {
+        signConfig {
+            storeFile file("./yoojia-sign.jks")
+            storePassword "yoojia"
+            keyAlias "YOOJIA"
+            keyPassword "yoojia"
+        }
+    }
+
     buildTypes {
         release {
+            signingConfig  signingConfigs.signConfig
             minifyEnabled false
+            shrinkResources true
+            debuggable false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }

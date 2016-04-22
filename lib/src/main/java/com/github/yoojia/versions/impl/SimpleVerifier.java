@@ -4,6 +4,7 @@ import com.github.yoojia.versions.Verifier;
 import com.github.yoojia.versions.Version;
 
 /**
+ * 校验远程版本与本地版本是否可以更新
  * @author YOOJIA CHEN (yoojiachen@gmail.com)
  * @since 0.1
  */
