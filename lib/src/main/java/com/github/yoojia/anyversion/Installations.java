@@ -32,10 +32,18 @@ class Installations {
                     int fileNameIdx = cursor.getColumnIndex(DownloadManager.COLUMN_LOCAL_FILENAME);
                     String fileName = cursor.getString(fileNameIdx);
                     if (fileName.endsWith(".apk")){
-                        Intent install = new Intent(Intent.ACTION_VIEW);
+                         if(Build.VERSION.SDK_INT>=24) {//判读版本是否在7.0以上
+                    	 Intent install = new Intent(Intent.ACTION_VIEW);
+                    	 install.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                   		 install.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                    	 install.setDataAndType(Uri.fromFile(new File(fileName)), "application/vnd.android.package-archive");
+                    	 startActivity(install);
+   						 } else{
+                    	 Intent install = new Intent(Intent.ACTION_VIEW);
                         install.setDataAndType(Uri.fromFile(new File(fileName)), "application/vnd.android.package-archive");
                         install.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         context.startActivity(install);
+ 					 	 }
                     }
                 }
             }finally {
